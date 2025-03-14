@@ -238,3 +238,47 @@ Invoke-WebRequest -Uri "http://localhost:5000/api/items" -Method POST -Headers $
 `!Note` _Gunakan perintah ini jika anda menggunakan terminal powershell_<br>
 
 9. Terakhir, pergi ke alamat `http://localhost:5000/api/items` di web browser, dan jika ada tulisan description, id, dan name maka integrasi berhasil
+
+## Dockerization - Part 1
+
+  1. Pertama, tambahkan konten berikut ke file `requirements.txt`
+  ```
+  flask
+flask-cors
+psycopg2-binary
+```
+  2. Kemudian buka aplikasi Docker Dekstop
+  2. Tunggu hingga muncul status "Docker is Running"
+  3. Selanjutnya buat file di direktori `/backend` dengan nama `Dockerfile`
+  4. Isi konten file tersebut dengan kode berikut
+  ```Docker
+
+# Menggunakan image dasar Python versi 3.9 dengan varian slim (lebih ringan)
+FROM python:3.9-slim
+
+# Menetapkan direktori kerja di dalam container
+WORKDIR /app
+
+# Menyalin file requirements.txt ke dalam container
+COPY requirements.txt requirements.txt
+
+# Menginstal dependencies yang tercantum di requirements.txt tanpa menyimpan cache
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Menyalin seluruh isi direktori proyek ke dalam container
+COPY . .
+
+# Membuka port 5000 agar container dapat menerima koneksi
+EXPOSE 5000
+
+# Menjalankan aplikasi dengan perintah default
+CMD ["python", "app.py"]
+
+```
+
+6. Selanjutnya, jalankan perintah `docker build -t flask-backend:1.0 .` di direkotri `/backend` 
+7. Kemudian cek dengan perintah `docker image`
+8. Selanjutnya, jalankan container dengan perintah `docker run -d -p 5000:5000 --name flask-container flask-backend:1.0`
+9. Cek apakah container berjalan dengan perintah `docker ps`
+9. Kemudian pergi alamat `http://localhost:5000/` di browser
+10. Jika berhasil, akan muncul tulisan "Hello from Flask"
